@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 @app.post("/api")
-async def root(
+async def api_root(
     question: str = Form(...), 
     file: Optional[UploadFile] = File(None)
 ):
@@ -27,6 +27,11 @@ async def root(
             file_list = z.namelist()
             print("Files in the zip:", file_list)
     return {"message": "success"}
+
+
+@app.get("/")
+async def root():
+    return  {"message": "API is running"}
 
 if __name__ == "__main__":
     import uvicorn

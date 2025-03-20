@@ -1,0 +1,17 @@
+import requests
+import json
+
+def q1():
+
+    # code -s
+    return "Version:          Code 1.96.4 (cd4ee3b1c348a13bafd8f9ad8060705f6d4b9cba, 2025-01-16T00:16:19.038Z)\nOS Version:       Windows_NT x64 10.0.26100\nCPUs:             AMD Ryzen 5 PRO 7530U with Radeon Graphics      (12 x 1996)\nMemory (System):  14.80GB (6.68GB free)\nVM:               0%\nScreen Reader:    no\nProcess Argv:     --crash-reporter-id 7cb1abbc-0806-4071-90df-891b75f5c994\nGPU Status:       2d_canvas:                              enabled\n                  canvas_oop_rasterization:               enabled_on\n                  direct_rendering_display_compositor:    disabled_off_ok\n                  gpu_compositing:                        enabled\n                  multiple_raster_threads:                enabled_on\n                  opengl:                                 enabled_on\n                  rasterization:                          enabled\n                  raw_draw:                               disabled_off_ok\n                  skia_graphite:                          disabled_off\n                  video_decode:                           enabled\n                  video_encode:                           enabled\n                  vulkan:                                 disabled_off\n                  webgl:                                  enabled\n                  webgl2:                                 enabled\n                  webgpu:                                 enabled\n                  webnn:                                  disabled_off\n\nCPU %   Mem MB     PID  Process\n    0      136   13604  code main\n    0      115    4712  shared-process\n    0      222   10512  window [1] (.gitlab-ci.yml - lexis-nexis-product-recommender - Visual Studio Code)\n    0      114   12484  ptyHost\n    0       15    8660       conpty-agent\n    0       99   13544       C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -noexit -command \"try { . \\\"c:\\Users\\e430271.SPI-GLOBAL\\AppData\\Local\\Programs\\Microsoft VS Code\\resources\\app\\out\\vs\\workbench\\contrib\\terminal\\common\\scripts\\shellIntegration.ps1\\\" } catch {}\"\n    0       13   18112         C:\\WINDOWS\\system32\\cmd.exe /c \"\"C:\\Users\\e430271.SPI-GLOBAL\\AppData\\Local\\Programs\\Microsoft VS Code\\bin\\code.cmd\" -s\"\n    0      116    5588           electron-nodejs (cli.js )\n    0      144   15200             \"C:\\Users\\e430271.SPI-GLOBAL\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe\" -s\n    1      102    5112               gpu-process\n    0      100   15512               utility-network-service\n    0       95   20192               crashpad-handler\n    0      105   13136  fileWatcher [1]\n    0       44   20240     crashpad-handler\n    0       61   20676     utility-network-service\n    0      145   21460     gpu-process\n    0      467   23144  extensionHost [1]\n\nWorkspace Stats:\n|  Window (.gitlab-ci.yml - lexis-nexis-product-recommender - Visual Studio Code)\n|    Folder (lexis-nexis-product-recommender): 6 files\n|      File types: yml(1) json(1) py(1) html(1) md(1)\n|      Conf files:"
+
+
+def q2(email):
+
+    res = requests.get(f"https://httpbin.org/get?email={email}")
+    ans = res.json()
+
+    return ans
+
+print(q2("miryala.narayanareddy@straive.com"))
