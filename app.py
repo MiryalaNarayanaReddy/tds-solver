@@ -27,8 +27,7 @@ async def api_root(
     a1 = A1()
     key = a1.process_question(question)
     response = await a1.solve(key,question,file)
-
-
+    
     if response :
         # print("Response:", response) 
         return {"answer": str(response)}

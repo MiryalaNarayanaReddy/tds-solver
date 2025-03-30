@@ -10,6 +10,15 @@ from assignment_codes.tds_2025_01_ga1 import q_extract_csv_zip
 
 from assignment_codes.tds_2025_01_ga1 import q_use_json
 from assignment_codes.tds_2025_01_ga1 import q_multi_cursor_json
+from assignment_codes.tds_2025_01_ga1 import q_unicode_data
+from assignment_codes.tds_2025_01_ga1 import q_replace_across_files
+
+from assignment_codes.tds_2025_01_ga1 import q_move_rename_files
+from assignment_codes.tds_2025_01_ga1 import q_compare_files
+
+from assignment_codes.tds_2025_01_ga1 import q_list_files_attributes
+from assignment_codes.tds_2025_01_ga1 import q_sql_ticket_sales
+
 
 class A1:
     def __init__(self):
@@ -26,11 +35,11 @@ class A1:
             "q-use-excel": r"(?:Type\s+this\s+formula\s+into\s+Excel)",
             "q-use-devtools": r"(?:hidden\s+input|secret\s+value)",
             "q-count-wednesdays": r"How many (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)s are there in the date range (\d{4}-\d{2}-\d{2}) to (\d{4}-\d{2}-\d{2})",
-            "q-extract-csv-zip": r"(?:extract\.csv|csv\s+file)",
+            "q-extract-csv-zip": r"(?:q-extract-csv-zip.*\.zip|extract\.csv\s+file)",
             "q-use-json": r"(?:Sort\s+this\s+JSON\s+array)",
             "q-multi-cursor-json": r"(?:multi[-\s]?cursor).*(?:json)",
             "q-css-selectors": r"(?:CSS\s+selectors|select\s+elements\s+using\s+CSS)",
-            "q-unicode-data": r"(?:unicode.*data|files\s+in\s+.*zip)",
+           "q-unicode-data": r"(?:q-unicode-data.*\.zip|unicode.*files\s+with\s+different\s+encodings)",
             "q-use-github": r"(?:GitHub|commit\s+email\.json)",
             "q-replace-across-files": r"(?:replace\s+all\s+\"IITM\"|IITM\s+with\s+\"IIT Madras\")",
             "q-list-files-attributes": r"(?:ls\s+.*\s+list\s+all\s+files)",
@@ -59,11 +68,21 @@ class A1:
             "q-use-json": q_use_json,
 
             "q-multi-cursor-json": q_multi_cursor_json,
+            "q-unicode-data": q_unicode_data,
+
+            "q-replace-across-files": q_replace_across_files,
+
+            "q-move-rename-files": q_move_rename_files,
+            "q-compare-files": q_compare_files, 
+            "q-list-files-attributes": q_list_files_attributes,
+            "q-sql-ticket-sales": q_sql_ticket_sales,
 
         }
 
         if key not in solver:
             return "No such question"
+        
+        print(key)
         
         return await solver[key](question,file)
 
