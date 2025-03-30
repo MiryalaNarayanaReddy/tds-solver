@@ -21,10 +21,12 @@ app.add_middleware(
 
 from a1 import A1
 from a2 import A2
+from a3 import A3
 
 assignments = {
     "a1": A1(),
-    "a2": A2()
+    "a2": A2(),
+    "a3": A3()
 }
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  # GitHub token with repo access
