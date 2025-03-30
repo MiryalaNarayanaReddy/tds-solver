@@ -1,11 +1,6 @@
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
-import zipfile
-import io
-import re
-import requests
-
 
 app = FastAPI()
 
