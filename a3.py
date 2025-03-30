@@ -1,10 +1,11 @@
 import re
 
 from assignment_codes.tds_2025_01_ga3 import q_llm_sentiment_analysis
-
 from assignment_codes.tds_2025_01_ga3 import q_llm_embeddings
-
+from assignment_codes.tds_2025_01_ga3 import q_embedding_similarity
 from assignment_codes.tds_2025_01_ga3 import q_get_llm_to_say_yes
+from assignment_codes.tds_2025_01_ga3 import q_generate_addresses_with_llms
+
 
 class A3:
     def __init__(self):
@@ -35,11 +36,10 @@ class A3:
 
         solver = {
             "q-llm-sentiment-analysis": q_llm_sentiment_analysis,
-
+            "q-generate-addresses-with-llms": q_generate_addresses_with_llms,
             "q-llm-embeddings": q_llm_embeddings,
-
+            "q-embedding-similarity": q_embedding_similarity,
             "q-get-llm-to-say-yes": q_get_llm_to_say_yes,
-
         }
 
         if key not in solver:
