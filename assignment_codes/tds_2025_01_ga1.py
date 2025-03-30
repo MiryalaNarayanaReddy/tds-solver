@@ -15,7 +15,7 @@ import hashlib
 import pytz
 
 # Constants
-TEMP_PATH = "/tmp"
+TEMP_DIR = "/tmp"
 # TEMP_DIR = "./temp"
 
 
