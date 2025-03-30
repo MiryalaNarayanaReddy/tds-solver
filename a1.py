@@ -40,7 +40,7 @@ class A1:
             "q-multi-cursor-json": r"(?:multi[-\s]?cursor).*(?:json)",
             "q-css-selectors": r"(?:CSS\s+selectors|select\s+elements\s+using\s+CSS)",
            "q-unicode-data": r"(?:q-unicode-data.*\.zip|unicode.*files\s+with\s+different\s+encodings)",
-            "q-use-github": r"(?:GitHub|commit\s+email\.json)",
+            "q-use-github": r"(?:Create\s+a\s+GitHub\s+account\s+if\s+you\s+don't\s+have\s+one|Commit\s+a\s+single\s+JSON\s+file\s+called\s+email\.json)",
             "q-replace-across-files": r"(?:replace\s+all\s+\"IITM\"|IITM\s+with\s+\"IIT Madras\")",
             "q-list-files-attributes": r"(?:ls\s+.*\s+list\s+all\s+files)",
             "q-move-rename-files": r"(?:move|rename).*(?:files)",
@@ -53,7 +53,7 @@ class A1:
                 return key
         return None
     
-    async def solve(self,key,question,file=None):
+    async def solve(self,key,question,file=None,GITHUB_TOKEN=None):
 
         solver = {
             "q-vs-code-version": q_vs_code_version,
