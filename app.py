@@ -6,7 +6,6 @@ import io
 import re
 import requests
 
-from process import process_question
 
 app = FastAPI()
 
@@ -31,23 +30,16 @@ async def api_root(
     # Process the question
     # response = process_question(question)
     a1 = A1()
-    response = a1.process_question(question)
+    key = a1.process_question(question)
+    response = await a1.solve(key,question,file)
+
 
     if response :
-        print("Response:", response) 
-        return {"answer": response}
+        # print("Response:", response) 
+        return {"answer": str(response)}
     else:
         print("No response found")
         return {"error": "No response found"}
-
-    # Handle file upload if provided
-    if file:
-        content = await file.read()
-        with zipfile.ZipFile(io.BytesIO(content)) as z:
-            file_list = z.namelist()
-            print("Files in the zip:", file_list)
-
-    return {"answer": response}
 
 @app.get("/")
 async def root():
