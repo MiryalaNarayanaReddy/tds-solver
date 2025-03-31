@@ -3,7 +3,12 @@ import re
 import io
 from dateutil import parser
 
+import os
+import shutil
+import tempfile
+import gzip
 
+TEMP_DIR = "./temp"
 
 ### q-clean-up-excel-sales-data
 
@@ -145,5 +150,98 @@ async def q_clean_up_student_marks(question, file=None):
     
     except Exception as e:
         return {"error": f"Error processing file: {e}"}
+
+
+# Mapping for month abbreviations to numeric representation
+MONTH_MAP = {
+    "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04",
+    "May": "05", "Jun": "06", "Jul": "07", "Aug": "08",
+    "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
+}
+
+async def q_apache_log_requests(question, file=None):
+
+    TEMP_DIR = tempfile.gettempdir()
+    TEMP_PATH = os.path.join(TEMP_DIR, "q-apache-log-requests")
+    
+    try:
+        os.makedirs(TEMP_PATH, exist_ok=True)
+        
+        # Save the uploaded file to a temporary .gz file
+        gz_path = os.path.join(TEMP_PATH, "q-apache-log-requests.gz")
+        if file:
+            content = await file.read()  # Await the read operation
+            with open(gz_path, "wb") as f:
+                f.write(content)
+        else:
+            return {"error": "No file provided"}
+        
+        # Decompress the .gz file into a plain text log file
+        log_file_path = os.path.join(TEMP_PATH, "log.txt")
+        with gzip.open(gz_path, "rb") as gz_file, open(log_file_path, "wb") as out_file:
+            shutil.copyfileobj(gz_file, out_file)
+        
+        # q_pattern =  r"What is the number of successful GET requests for pages under\s*/?\s*([^/\s]+)\s*/?\s*from\s*(\d+)\s*:\s*00\s*until before\s*(\d+)\s*:\s*00\s*on\s*([A-Za-z]+)s\?"
+        # q_match = re.search(q_pattern, question)
+
+        # Simple regex pattern
+        q_pattern = r"What is the number of successful GET requests for pages under /([^/]+)/ from (\d+) until before (\d+):00 on (\w+)s"
+
+        # Match the pattern
+        q_match = re.search(q_pattern, question)
+
+        req_path = None
+        start_hour = None
+        end_hour = None
+        weekday = None
+
+        if q_match:
+            req_path = q_match.group(1)       # Extracts "malayalam"
+            start_hour = int(q_match.group(2))  # Extracts 0
+            end_hour = int(q_match.group(3))    # Extracts 6
+            weekday = q_match.group(4)         # Extracts "Wednesday"
+
+            print(req_path, start_hour, end_hour, weekday)
+        else:
+            print("No match found")
+      
+        # log_pattern = re.compile(
+        #     r'(?P<ip>[\d\.]+)\s+-\s+-\s+\['
+        #     r'(?P<day>\d{2})/(?P<mon>[A-Za-z]{3})/(?P<year>\d{4}):'
+        #     r'(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2}).*?\]\s+"'
+        #     r'(?P<method>GET)\s+'
+        #     r'(?P<path>/' + re.escape(req_path) + r'/[^"]*)"'
+        #     r'\s+(?P<status>[2]\d{2})\s+'
+        # )
+        
+        # count = 0
+        # with open(log_file_path, "r", encoding="utf-8", errors="ignore") as log_file:
+        #     for line in log_file:
+        #         match = log_pattern.search(line)
+        #         if match:
+        #             hour = int(match.group("hour"))
+        #             if start_hour <= hour < end_hour:
+        #                 # Construct the date string from the log fields
+        #                 day = match.group("day")
+        #                 mon_abbr = match.group("mon")
+        #                 year = match.group("year")
+        #                 month = MONTH_MAP.get(mon_abbr, "01")
+        #                 date_str = f"{day}/{month}/{year} {match.group('hour')}:{match.group('minute')}:{match.group('second')}"
+        #                 try:
+        #                     dt = datetime.strptime(date_str, "%d/%m/%Y %H:%M:%S")
+        #                 except Exception:
+        #                     continue
+        #                 # Check if the log entry falls on the specified weekday.
+        #                 if dt.strftime("%A") == weekday:
+        #                     count += 1
+        
+        # # Cleanup temporary files
+        # shutil.rmtree(TEMP_PATH, ignore_errors=True)
+        # return {"result": count}
+    
+    except Exception as e:
+        # shutil.rmtree(TEMP_PATH, ignore_errors=True)
+        return {"error": f"Error processing file: {e}"}
+
 
 

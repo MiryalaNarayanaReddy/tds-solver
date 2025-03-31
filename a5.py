@@ -2,7 +2,7 @@ import re
 
 from  assignment_codes.tds_2025_01_ga5 import q_clean_up_excel_sales_data
 from assignment_codes.tds_2025_01_ga5 import q_clean_up_student_marks
-
+from assignment_codes.tds_2025_01_ga5 import q_apache_log_requests
 
 class A5:
     def __init__(self):
@@ -13,7 +13,7 @@ class A5:
     
         patterns = {
             "q-apache-log-downloads": r"(?:total\s+number\s+of\s+bytes\s+that\s+this\s+IP\s+address\s+downloaded|how\s+many\s+bytes\s+did\s+the\s+top\s+IP\s+address\s+download\?)",
-            "q-apache-log-requests": r"(?:successful\s+GET\s+requests\s+for\s+pages\s+under\s+/malayalam/|from\s+0:00\s+until\s+before\s+6:00\s+on\s+Wednesdays\?)",
+            "q-apache-log-requests": r"What is the number of successful GET requests for pages under",
             "q-clean-up-excel-sales-data": r"(?:clean\s+this\s+Excel\s+data\s+and\s+calculate\s+the\s+total\s+margin|transactions\s+before\s+Tue\s+Aug\s+15\s+2023\s+10:22:08\s+GMT\+0530\s+for\s+Alpha\s+sold\s+in\s+UK)",
             "q-clean-up-sales-data": r"(?:units\s+of\s+Sausages\s+were\s+sold\s+in\s+Shenzhen|transactions\s+with\s+at\s+least\s+23\s+units\?)",
             "q-clean-up-student-marks": r"(?:adherence\s+to\s+regulatory\s+requirements\s+by\s+maintaining\s+precise\s+student\s+records|How\s+many\s+unique\s+students\s+are\s+there\s+in\s+the\s+file\?)",
@@ -35,6 +35,7 @@ class A5:
         solver = {
             "q-clean-up-excel-sales-data": q_clean_up_excel_sales_data,
             "q-clean-up-student-marks": q_clean_up_student_marks,
+            # "q-apache-log-requests": q_apache_log_requests,
         }
 
         if key not in solver:
