@@ -8,6 +8,7 @@ from assignment_codes.tds_2025_01_ga4 import q_nominatim_api
 from assignment_codes.tds_2025_01_ga4 import q_hacker_news_search   
 from assignment_codes.tds_2025_01_ga4 import q_find_newest_github_user
 from assignment_codes.tds_2025_01_ga4 import q_scheduled_github_actions
+from assignment_codes.tds_2025_01_ga4 import q_extract_table_from_pdf
 
 class A4:
     def __init__(self):
@@ -47,7 +48,8 @@ class A4:
             "q-hacker-news-search": q_hacker_news_search,
             "q-find-newest-github-user": q_find_newest_github_user,
             "q-scheduled-github-actions": q_scheduled_github_actions,
-           
+            # "q-extract-tables-from-pdf": q_extract_table_from_pdf, # needs java runtime
+            # "q-pdf-to-markdown": q_pdf_to_markdown,
         }
 
         if key not in solver:

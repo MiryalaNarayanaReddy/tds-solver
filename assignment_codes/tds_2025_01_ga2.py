@@ -254,3 +254,69 @@ async def q_fastapi(question, GITHUB_TOKEN=None, file=None):
     
     except Exception as e:
         return {"error": f"Error processing file: {e}"}
+
+
+
+async def q_docker_hub_image(question, GITHUB_TOKEN=None):
+    import re
+    # Extract email from the question
+    # email_match = re.search(r"email\s+([\w.\-+@]+)", question, re.IGNORECASE)
+
+    # Add a tag named miryala.narayanareddy to the image.
+
+    tag_name = re.search(r"Add a tag named (.*) to the image", question, re.IGNORECASE)
+    if not tag_name:
+        return "Could not parse the question. Please ensure it follows the correct format."
+    
+    tag_name = tag_name.group(1)
+
+    print(tag_name)
+
+
+    yml_file = f"""name: Build and Push Docker Image with Tag
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Create a sample Dockerfile
+      run: |
+        echo "FROM alpine:3.17" > Dockerfile
+        echo "CMD [\\\"echo\\\", \\\"Hello from a tagged Docker image!\\\"]" >> Dockerfile
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{{{ secrets.DOCKER_USERNAME }}}}
+        password: ${{{{ secrets.DOCKER_PASSWORD }}}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: narayanareddy123/sample-image:{tag_name}
+"""
+
+    # Define GitHub repository details and workflow file path
+    USERNAME = "MiryalaNarayanaReddy"
+    REPO_NAME = "tds-project-scheduled-workflow"
+    WORKFLOW_PATH = ".github/workflows/docker-push.yml"
+    
+    # Update the workflow file in the repository and trigger the workflow
+    await update_github_file(yml_file, WORKFLOW_PATH, USERNAME, REPO_NAME, "master", GITHUB_TOKEN)
+    await trigger_github_workflow(USERNAME, REPO_NAME, "docker-push.yml", GITHUB_TOKEN, "master")
+    
+    # Construct and return the Docker image URL.
+    # The URL follows the pattern: https://hub.docker.com/repository/docker/$USER/$REPO/general
+    return f"https://hub.docker.com/repository/docker/narayanareddy123/sample-image/general"
