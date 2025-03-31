@@ -12,7 +12,7 @@ from PIL import Image
 import colorsys
 import numpy as np
 
-from assignment_codes.helper import update_github_file
+from assignment_codes.helper import update_github_file,trigger_github_workflow
 
 async def q_markdown(question, file=None):
     return """# Analysis of Number of Steps walked
@@ -167,3 +167,95 @@ async def q_github_pages(question, GITHUB_TOKEN=None):
     if result is True:
         return f"https://{REPO_OWNER}.github.io/{REPO_NAME}/"
     return result  # Return error if not successful
+
+
+
+async def q_vercel_python(question, GITHUB_TOKEN=None, file=None):
+    """Update a file at the given GitHub URL with the data from the uploaded file."""
+    
+    REPO_OWNER = "MiryalaNarayanaReddy"
+    REPO_NAME = "tds-project-scheduled-workflow"
+    BRANCH = "master"
+    FILE_PATH = "q-vercel-python.json"
+    FILE_URL = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/{BRANCH}/{FILE_PATH}"
+    
+    try:
+        # Read the uploaded file
+        file_content = await file.read()
+        file_content_str = file_content.decode("utf-8")
+
+        # Update the file in GitHub
+        result = await update_github_file(file_content_str, FILE_PATH, REPO_OWNER, REPO_NAME, BRANCH, GITHUB_TOKEN)
+        
+        if result is True:
+            return "https://tds-project-vercel-app.vercel.app/api"
+        return result  # Return error if update fails
+    
+    except Exception as e:
+        return {"error": f"Error processing file: {e}"}
+
+
+async def q_github_action(question, GITHUB_TOKEN=None):
+
+    email_match = re.search(r"email\s+address\s+([\w.\-+@]+)", question, re.IGNORECASE)
+    email = email_match.group(1) if email_match else "default@example.com"
+    print(email)
+    # email = "miryala@straive.com"
+    yml_file = f"""name: GitHub Actions Demo
+
+on: [push]
+
+jobs:
+  explore-github-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: {email}
+        run: echo "Hello, world!"
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Display Information
+        run: |
+          echo "🚀 Workflow triggered by ${{ github.event_name }}"
+          echo "🐧 Running on ${{ runner.os }}"
+          echo "🔎 Branch: ${{ github.ref }}, Repo: ${{ github.repository }}"
+          echo "💡 Repository cloned successfully"
+          echo "📂 Listing repository files:"
+          ls ${{ github.workspace }}
+          echo "🍏 Job status: ${{ job.status }}"
+"""
+    
+    USERNAME = "MiryalaNarayanaReddy"
+    REPO_NAME = "tds-project-gitpage"
+    WORKFLOW_PATH = ".github/workflows/test.yml"
+    
+    await update_github_file(yml_file, WORKFLOW_PATH, USERNAME, REPO_NAME, "main", GITHUB_TOKEN)
+    await trigger_github_workflow(USERNAME, REPO_NAME, "test.yml", GITHUB_TOKEN,"main")
+    
+    return f"https://github.com/{USERNAME}/{REPO_NAME}"
+
+
+async def q_fastapi(question, GITHUB_TOKEN=None, file=None):
+    """Update q-fastapi.csv in the GitHub repository and return the API URL."""
+    
+    REPO_OWNER = "MiryalaNarayanaReddy"
+    REPO_NAME = "tds-project-scheduled-workflow"
+    BRANCH = "master"
+    FILE_PATH = "q-fastapi.csv"
+    FILE_URL = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/{BRANCH}/{FILE_PATH}"
+    
+    try:
+        # Read the uploaded file
+        file_content = await file.read()
+        file_content_str = file_content.decode("utf-8")
+
+        # Update the file in GitHub
+        result = await update_github_file(file_content_str, FILE_PATH, REPO_OWNER, REPO_NAME, BRANCH, GITHUB_TOKEN)
+        
+        if result is True:
+            return "https://q-fastapi.vercel.app/api"
+        return result  # Return error if update fails
+    
+    except Exception as e:
+        return {"error": f"Error processing file: {e}"}

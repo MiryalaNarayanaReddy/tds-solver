@@ -7,6 +7,11 @@ from assignment_codes.tds_2025_01_ga2 import q_use_colab
 from assignment_codes.tds_2025_01_ga2 import q_use_colab_image_library
 
 from assignment_codes.tds_2025_01_ga2 import q_github_pages
+from assignment_codes.tds_2025_01_ga2 import q_github_action
+
+from assignment_codes.tds_2025_01_ga2 import q_vercel_python
+from assignment_codes.tds_2025_01_ga2 import q_fastapi
+
 
 class A2:
     def __init__(self):
@@ -41,9 +46,13 @@ class A2:
             "q-image-compression": q_image_compression,
 
             "q-github-pages": q_github_pages,
+            "q-github-action": q_github_action,
 
             "q-use-colab": q_use_colab,
             "q-use-colab-image-library": q_use_colab_image_library,
+
+            "q-vercel-python": q_vercel_python,
+            "q-fastapi": q_fastapi,
             
         }
 
@@ -51,9 +60,15 @@ class A2:
             # return "No such question"
             return key
 
-        if key in ["q-github-pages"]:
+        if key in ["q-github-pages","q-vercel-python","q-github-action","q-fastapi"]:
             if key == "q-github-pages":
                 return await solver[key](question, GITHUB_TOKEN)
+            elif key == "q-github-action":
+                return await solver[key](question, GITHUB_TOKEN)
+            elif key == "q-vercel-python":
+                return await solver[key](question, GITHUB_TOKEN, file)
+            elif key == "q-fastapi":
+                return await solver[key](question, GITHUB_TOKEN, file)
         
         return await solver[key](question, file)
 
