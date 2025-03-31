@@ -42,3 +42,22 @@ async def update_github_file(content, FILE_PATH, REPO_OWNER, REPO_NAME, BRANCH, 
 
     except Exception as e:
         return {"error": f"Error updating GitHub file: {e}"}
+
+
+async def trigger_github_workflow(REPO_OWNER, REPO_NAME, WORKFLOW_FILENAME, GITHUB_TOKEN, REF="main"):
+    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/actions/workflows/{WORKFLOW_FILENAME}/dispatches"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+    payload = {"ref": REF}
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, headers=headers, json=payload)
+
+    print(f"Status Code: {response.status_code}")
+    print(f"Response Text: {response.text}")
+
+    if response.status_code == 204:
+        return {"success": "Workflow triggered successfully"}
+    return {"error": f"GitHub API error: {response.status_code}, {response.text}"}

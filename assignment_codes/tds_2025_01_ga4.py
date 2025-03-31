@@ -1,10 +1,12 @@
-
 import re
 import requests
-from bs4 import BeautifulSoup
 import json
-from geopy.geocoders import Nominatim
 
+from bs4 import BeautifulSoup
+from geopy.geocoders import Nominatim
+import xml.etree.ElementTree as ET
+
+from assignment_codes.helper import update_github_file,trigger_github_workflow
 
 async def q_google_sheets_importhtml(question: str, file=None):
     # Extract the page number using regex
@@ -212,3 +214,146 @@ async def q_nominatim_api(question: str, file=None):
     # }
 
     return result
+
+
+async def q_hacker_news_search(question, file=None):
+    """
+    Extracts search parameters from the question and searches the Hacker News RSS feed
+    for the latest post mentioning the given topic with at least the specified points.
+    """
+    # Regular expression to extract topic and minimum points
+    pattern = r"What is the link to the latest Hacker News post mentioning (.+?) having at least (\d+) points"
+    match = re.search(pattern, question, re.IGNORECASE)
+    
+    if not match:
+        raise ValueError("Could not parse the question. Please ensure it follows the correct format.")
+    
+    topic = match.group(1).strip()
+    min_points = match.group(2).strip()
+    
+    # Define the HNRSS API URL with search query and minimum points filter
+    url = f"https://hnrss.org/newest?q={topic.replace(' ', '%20')}&points={min_points}"
+    
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise ValueError(f"Failed to fetch Hacker News: {response.status_code} {response.reason}")
+    
+    # Parse the XML response
+    root = ET.fromstring(response.text)
+    
+    # Extract the latest <item> mentioning the topic
+    for item in root.findall(".//item"):
+        title = item.find("title").text if item.find("title") is not None else ""
+        link = item.find("link").text if item.find("link") is not None else ""
+        
+        # Ensure the topic is mentioned in the title
+        if re.search(rf'\b{re.escape(topic)}\b', title, re.IGNORECASE):
+            return link  # Return only the URL as required
+
+    return "No matching post found"
+
+
+
+async def q_find_newest_github_user(question, GITHUB_TOKEN=None):
+
+    # Define search parameters
+    # location = "Chicago"
+    # min_followers = 80
+
+    # find all users located in the city Chicago with over 80 followers.
+
+    pattern = r"find all users located in the city (.+?) with over (\d+) followers"
+    match = re.search(pattern, question, re.IGNORECASE)
+    
+    if not match:
+        raise ValueError("Could not parse the question. Please ensure it follows the correct format.")
+    
+    location = match.group(1).strip()
+    min_followers = match.group(2).strip()
+
+    # GitHub API URL for searching users
+    search_url = f"https://api.github.com/search/users?q=location:{location}+followers:>={min_followers}&sort=joined&order=desc"
+
+    # Headers with authentication
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "X-GitHub-Api-Version": "2022-11-28"
+    }
+
+    # Fetch the list of users
+    response = requests.get(search_url, headers=headers)
+
+    if response.status_code == 200:
+        users = response.json().get("items", [])
+        
+        if users:
+            # Get the most recently joined user's profile
+            newest_user_url = users[0]['url']  # API URL for the first user in sorted results
+            user_response = requests.get(newest_user_url, headers=headers)
+            
+            if user_response.status_code == 200:
+                created_at = user_response.json().get("created_at")
+                # print(f"Newest user joined on: {created_at}")  # Print account creation date
+                return created_at
+            else:
+                print(f"Failed to fetch user details: {user_response.status_code} {user_response.reason}")
+        else:
+            print("No users found matching criteria.")
+    else:
+        print(f"Failed to fetch data: {response.status_code} {response.reason}")
+
+
+async def q_scheduled_github_actions(question, GITHUB_TOKEN=None):
+
+    email_match = re.search(r"email\s+([\w.\-+@]+)", question, re.IGNORECASE)
+    email = email_match.group(1) if email_match else "default@example.com"
+    print(email)
+    # email = "miryala@straive.com"
+    yml_file = f"""name: Daily Commit
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '30 18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: {email}
+      run: |
+        echo "Hello, world!"
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        token: ${{{{ secrets.GITHUB_TOKEN }}}}
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "{email}"
+
+    - name: Create a commit
+      run: |
+        echo "Daily update: $(date)" >> daily_commit.txt
+        git add daily_commit.txt
+        git commit -m "Daily commit by GitHub Actions"
+        git push
+"""
+    
+    USERNAME = "MiryalaNarayanaReddy"
+    REPO_NAME = "tds-project-scheduled-workflow"
+    WORKFLOW_PATH = ".github/workflows/8.yml"
+    
+    await update_github_file(yml_file, WORKFLOW_PATH, USERNAME, REPO_NAME, "master", GITHUB_TOKEN)
+    await trigger_github_workflow(USERNAME, REPO_NAME, "8.yml", GITHUB_TOKEN,"master")
+    
+    return f"https://github.com/{USERNAME}/{REPO_NAME}"

@@ -5,7 +5,9 @@ from assignment_codes.tds_2025_01_ga4 import q_scrape_imdb_movies
 from assignment_codes.tds_2025_01_ga4 import q_wikipedia_outline
 from assignment_codes.tds_2025_01_ga4 import q_bbc_weather_api
 from assignment_codes.tds_2025_01_ga4 import q_nominatim_api
-
+from assignment_codes.tds_2025_01_ga4 import q_hacker_news_search   
+from assignment_codes.tds_2025_01_ga4 import q_find_newest_github_user
+from assignment_codes.tds_2025_01_ga4 import q_scheduled_github_actions
 
 class A4:
     def __init__(self):
@@ -42,6 +44,9 @@ class A4:
             "q-wikipedia-outline": q_wikipedia_outline,
             "q-bbc-weather-api": q_bbc_weather_api,
             "q-nominatim-api": q_nominatim_api,
+            "q-hacker-news-search": q_hacker_news_search,
+            "q-find-newest-github-user": q_find_newest_github_user,
+            "q-scheduled-github-actions": q_scheduled_github_actions,
            
         }
 
@@ -49,8 +54,8 @@ class A4:
             # return "No such question"
             return key
 
-        # if key in ["q-github-pages"]:
-        #     if key == "q-github-pages":
-        #         return await solver[key](question, GITHUB_TOKEN)
+
+        if key in ["q-find-newest-github-user","q-scheduled-github-actions"]:
+                return await solver[key](question, GITHUB_TOKEN)
     
         return await solver[key](question, file)
