@@ -2,6 +2,10 @@ import re
 
 from assignment_codes.tds_2025_01_ga4 import q_google_sheets_importhtml
 from assignment_codes.tds_2025_01_ga4 import q_scrape_imdb_movies
+from assignment_codes.tds_2025_01_ga4 import q_wikipedia_outline
+from assignment_codes.tds_2025_01_ga4 import q_bbc_weather_api
+from assignment_codes.tds_2025_01_ga4 import q_nominatim_api
+
 
 class A4:
     def __init__(self):
@@ -35,6 +39,9 @@ class A4:
         solver = {
             "q-google-sheets-importhtml": q_google_sheets_importhtml,
             "q-scrape-imdb-movies": q_scrape_imdb_movies,
+            "q-wikipedia-outline": q_wikipedia_outline,
+            "q-bbc-weather-api": q_bbc_weather_api,
+            "q-nominatim-api": q_nominatim_api,
            
         }
 
@@ -47,5 +54,3 @@ class A4:
         #         return await solver[key](question, GITHUB_TOKEN)
     
         return await solver[key](question, file)
-
-        

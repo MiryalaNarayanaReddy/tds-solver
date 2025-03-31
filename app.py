@@ -3,7 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import os 
 
+import requests
+import lxml.html # install lxml using pip install lxml
+
 from dotenv import load_dotenv
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -56,17 +60,13 @@ async def api_root(
     question: str = Form(...), 
     file: Optional[UploadFile] = File(None)
 ):
-    # print("Question:", question)
-
-    # a1 = A1()
-    # key = a1.process_question(question)
-    # response = await a1.solve(key,question,file)
-
-
     answer = await process_request(question, file)
 
     if answer:
-        return {"answer": str(answer)}
+        if isinstance(answer, int) or isinstance(answer, float):
+            return {"answer": str(answer)}
+        else:
+            return {"answer": answer}
     else:
         print("No response found")
         return {"error": "No response found"}
@@ -74,6 +74,50 @@ async def api_root(
 @app.get("/")
 async def root():
     return  {"message": "API is running"}
+
+
+@app.get("/q-wikipedia-outline")
+async def root(country: str):
+    # get wikipedia page
+    WIKI_URL = f"https://en.wikipedia.org/wiki/{country}"
+    # response = httpx.get(WIKI_URL)
+
+    response = requests.get(WIKI_URL,verify=False)
+
+    # extract h1 to h6 tags
+    tree = lxml.html.fromstring(response.content)
+    h_tags = tree.xpath("//h1|//h2|//h3|//h4|//h5|//h6")
+
+    # create markdown list 
+    # h1: #, h2: ##, h3: ###, h4: ####, h5: #####, h6: ######
+    # markdown_list = "\n".join([f"{i.tag}: {i.text}" for i in h_tags])
+    # return {"message": markdown_list}
+
+    # create markdown outline
+    '''
+    # <h1 text>
+    ## <h2 text>
+    ### <h3 text>
+    # <h1 text> 
+    '''
+
+    markdown_outline = "" 
+    for i in h_tags:
+        if i.tag == "h1":
+            markdown_outline += f"# {i.text}\n"
+        elif i.tag == "h2":
+            markdown_outline += f"## {i.text}\n"
+        elif i.tag == "h3":
+            markdown_outline += f"### {i.text}\n"
+        elif i.tag == "h4":
+            markdown_outline += f"#### {i.text}\n"
+        elif i.tag == "h5":
+            markdown_outline += f"##### {i.text}\n"
+        elif i.tag == "h6":
+            markdown_outline += f"###### {i.text}\n"
+        
+    return markdown_outline
+
 
 if __name__ == "__main__":
     import uvicorn
