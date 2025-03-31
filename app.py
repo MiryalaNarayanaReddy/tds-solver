@@ -6,11 +6,10 @@ import os
 import requests
 import lxml.html # install lxml using pip install lxml
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv # Load environment variables from .env file
 
+load_dotenv() # Load environment variables from .env file
 
-# Load environment variables from .env file
-load_dotenv()
 
 app = FastAPI()
 

@@ -70,10 +70,8 @@ image of line chart
 
 """
 
-
-async def q_image_compression(question,file):
-    """Compress an uploaded image losslessly to WebP and return Base64 in JSON."""
-
+async def q_image_compression(question, file):
+    """Compress an uploaded image losslessly to WebP and return Base64 in JSON format."""
     try:
         # Read uploaded file
         image = Image.open(BytesIO(await file.read()))
@@ -84,18 +82,15 @@ async def q_image_compression(question,file):
 
         # Check file size
         compressed_size = output_buffer.tell()
-        if compressed_size > 1500:
+        if compressed_size > 1500:  # Adjust this size limit if needed
             return {"error": "Unable to compress image losslessly under 1,500 bytes."}
 
-        # Encode to Base64
+        # Encode to Base64 and format as data URI
         base64_image = base64.b64encode(output_buffer.getvalue()).decode("utf-8")
+        return  f"data:image/webp;base64,{base64_image}"
 
-        return base64_image
-    
-    
     except Exception as e:
         return {"error": f"Error processing file: {e}"}
-
 
 async def q_use_colab(question, file=None):
     # Extract only the email from the question
