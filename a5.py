@@ -1,5 +1,8 @@
 import re
 
+from  assignment_codes.tds_2025_01_ga5 import q_clean_up_excel_sales_data
+from assignment_codes.tds_2025_01_ga5 import q_clean_up_student_marks
+
 
 class A5:
     def __init__(self):
@@ -30,7 +33,8 @@ class A5:
     async def solve(self,key,question,file=None,GITHUB_TOKEN=None):
 
         solver = {
-           
+            "q-clean-up-excel-sales-data": q_clean_up_excel_sales_data,
+            "q-clean-up-student-marks": q_clean_up_student_marks,
         }
 
         if key not in solver:
