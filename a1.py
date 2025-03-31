@@ -19,6 +19,7 @@ from assignment_codes.tds_2025_01_ga1 import q_compare_files
 from assignment_codes.tds_2025_01_ga1 import q_list_files_attributes
 from assignment_codes.tds_2025_01_ga1 import q_sql_ticket_sales
 
+from assignment_codes.tds_2025_01_ga1 import q_use_github
 
 class A1:
     def __init__(self):
@@ -39,7 +40,7 @@ class A1:
             "q-use-json": r"(?:Sort\s+this\s+JSON\s+array)",
             "q-multi-cursor-json": r"(?:multi[-\s]?cursor).*(?:json)",
             "q-css-selectors": r"(?:CSS\s+selectors|select\s+elements\s+using\s+CSS)",
-           "q-unicode-data": r"(?:q-unicode-data.*\.zip|unicode.*files\s+with\s+different\s+encodings)",
+            "q-unicode-data": r"(?:q-unicode-data.*\.zip|unicode.*files\s+with\s+different\s+encodings)",
             "q-use-github": r"(?:Create\s+a\s+GitHub\s+account\s+if\s+you\s+don't\s+have\s+one|Commit\s+a\s+single\s+JSON\s+file\s+called\s+email\.json)",
             "q-replace-across-files": r"(?:replace\s+all\s+\"IITM\"|IITM\s+with\s+\"IIT Madras\")",
             "q-list-files-attributes": r"(?:ls\s+.*\s+list\s+all\s+files)",
@@ -71,6 +72,7 @@ class A1:
             "q-unicode-data": q_unicode_data,
 
             "q-replace-across-files": q_replace_across_files,
+            "q-use-github": q_use_github,
 
             "q-move-rename-files": q_move_rename_files,
             "q-compare-files": q_compare_files, 
@@ -80,10 +82,13 @@ class A1:
         }
 
         if key not in solver:
-            return "No such question"
+            return key 
         
         print(key)
+
+        if key in ["q-use-github"]:
+            if key == "q-use-github":
+                return await solver[key](question, GITHUB_TOKEN)
         
         return await solver[key](question,file)
 
-        

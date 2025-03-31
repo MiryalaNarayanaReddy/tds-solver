@@ -13,11 +13,11 @@ import shutil
 import hashlib
 
 import pytz
+from assignment_codes.helper import update_github_file
 
 # Constants
 TEMP_DIR = "/tmp"
 # TEMP_DIR = "./temp"
-
 
 async def q_vs_code_version(question=None,file=None):
     # code -s
@@ -350,11 +350,11 @@ async def q_replace_across_files(question, file=None):
     
     except Exception as e:
         return {"error": f"Error processing file: {e}"}
-    
+
 
 async def q_move_rename_files(question, file=None):
     """Extract ZIP, move all files into one folder, rename digits, and compute SHA-256 checksum."""
-    TEMP_PATH = os.path.join(TEMP_DIR, "q-move-rename-files")
+    TEMP_PATH = os.path.join("/tmp", "q-move-rename-files")
     
     try:
         FINAL_FOLDER = os.path.join(TEMP_PATH, "final")
@@ -375,11 +375,20 @@ async def q_move_rename_files(question, file=None):
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_folder)
 
-        # Move all files from subdirectories into FINAL_FOLDER
+        # Move all files from subdirectories into FINAL_FOLDER (avoiding overwrites)
+        file_counter = {}  # Track filenames to avoid overwriting
         for root, _, files in os.walk(extract_folder):
             for filename in files:
+                base_name, ext = os.path.splitext(filename)
+                if filename in file_counter:
+                    file_counter[filename] += 1
+                    new_filename = f"{base_name}_{file_counter[filename]}{ext}"
+                else:
+                    file_counter[filename] = 0
+                    new_filename = filename
+
                 src_path = os.path.join(root, filename)
-                dest_path = os.path.join(FINAL_FOLDER, filename)
+                dest_path = os.path.join(FINAL_FOLDER, new_filename)
                 shutil.move(src_path, dest_path)
 
         # Rename files by replacing each digit with the next (9 becomes 0)
@@ -407,16 +416,22 @@ async def q_move_rename_files(question, file=None):
 
             # Read file lines **in binary mode**, then decode
             with open(file_path, "rb") as f:
+                has_contents = False
                 for line in f:
                     decoded_line = line.decode("latin1", "ignore").rstrip("\r\n")  # Normalize line endings
                     if decoded_line:  # Skip empty lines (mimic `grep . *`)
                         all_lines.append(f"{filename}:{decoded_line}")
+                        has_contents = True
+
+                # If file has no non-empty lines, do not include it
+                if not has_contents:
+                    all_lines.append(f"{filename}:")  # Mimic `grep . *`
 
         # Sort the output **in pure byte order (LC_ALL=C)**
         all_lines.sort(key=lambda x: x.encode("latin1"))
 
         for line in all_lines:
-            sha256_hash.update(line.encode("latin1"))
+            sha256_hash.update((line + "\n").encode("latin1"))  # Ensure trailing newline consistency
 
         result = sha256_hash.hexdigest()
 
@@ -427,7 +442,7 @@ async def q_move_rename_files(question, file=None):
 
     except Exception as e:
         return {"error": f"Error processing file: {e}"}
-
+    
 async def q_compare_files(question, file=None):
     """Extract ZIP, compare a.txt and b.txt line by line, and count differing lines."""
     TEMP_PATH = os.path.join(TEMP_DIR, "q-compare-files")
@@ -477,7 +492,6 @@ async def q_compare_files(question, file=None):
     except Exception as e:
         return {"error": f"Error processing file: {e}"}
     
-
 
 async def q_list_files_attributes(question, file=None):
     """Extract ZIP while preserving timestamps, list file attributes, filter by size & date, and sum sizes."""
@@ -540,3 +554,33 @@ async def q_list_files_attributes(question, file=None):
 async def q_sql_ticket_sales(question, file=None):
 
     return "select sum(units*price) from tickets where lower(trim(type)) = 'gold';"
+
+
+async def q_use_github(question, GITHUB_TOKEN=None):
+
+    email_match = re.search(r"[\w\.-]+@[\w\.-]+\.\w+", question)
+    email = email_match.group(0) if email_match else None
+
+    # print(email)
+    # # email = "miryala@straive.com"
+
+    # Prepare the JSON content
+    json_content = f"""
+    {{
+      "email": "{email}"
+    }}
+    """
+    
+    # Set your GitHub username and repository details
+    # https://github.com/MiryalaNarayanaReddy/tds-project-scheduled-workflow
+    USERNAME = "MiryalaNarayanaReddy"  # Replace with your actual GitHub username if different
+    REPO_NAME = "tds-project-scheduled-workflow"  # Replace with your actual repository name if different
+    FILE_PATH = "email.json"
+    
+    # Use a helper function to update (or create) the file in the repository.
+    # This function should handle authentication, branch selection, and pushing the commit.
+    await update_github_file(json_content, FILE_PATH, USERNAME, REPO_NAME, "master", GITHUB_TOKEN)
+    
+    # Construct and return the raw GitHub URL for the file
+    raw_url = f"https://raw.githubusercontent.com/{USERNAME}/{REPO_NAME}/master/{FILE_PATH}"
+    return raw_url
