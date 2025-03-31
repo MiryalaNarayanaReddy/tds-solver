@@ -8,7 +8,7 @@ from assignment_codes.tds_2025_01_ga4 import q_nominatim_api
 from assignment_codes.tds_2025_01_ga4 import q_hacker_news_search   
 from assignment_codes.tds_2025_01_ga4 import q_find_newest_github_user
 from assignment_codes.tds_2025_01_ga4 import q_scheduled_github_actions
-from assignment_codes.tds_2025_01_ga4 import q_extract_table_from_pdf
+# from assignment_codes.tds_2025_01_ga4 import q_extract_table_from_pdf
 
 class A4:
     def __init__(self):
