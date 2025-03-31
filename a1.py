@@ -31,7 +31,7 @@ class A1:
             "q-vs-code-version": r"(?:code\s*-s|Visual\s+Studio\s+Code\s)",
             "q-uv-http-get": r"email\s*set\s*to\s*([\w\.\@\-\+]+)",
             "q-npx-prettier": r"(?:npx\s+.*prettier)",
-            "q-use-google-sheets": r"(?:Google\s+Sheets|SUM\s*\(ARRAY_CONSTRAIN)",
+            "q-use-google-sheets": r"(?:Type\s+this\s+formula\s+into\s+Google\s+Sheets|SUM\s*\(ARRAY_CONSTRAIN)",
             "q-use-excel": r"(?:Type\s+this\s+formula\s+into\s+Excel)",
             "q-use-devtools": r"(?:hidden\s+input|secret\s+value)",
             "q-count-wednesdays": r"How many (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)s are there in the date range (\d{4}-\d{2}-\d{2}) to (\d{4}-\d{2}-\d{2})",
