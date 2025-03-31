@@ -6,6 +6,8 @@ from assignment_codes.tds_2025_01_ga3 import q_embedding_similarity
 from assignment_codes.tds_2025_01_ga3 import q_get_llm_to_say_yes
 from assignment_codes.tds_2025_01_ga3 import q_generate_addresses_with_llms
 
+from assignment_codes.tds_2025_01_ga3 import q_token_cost
+from assignment_codes.tds_2025_01_ga3 import q_llm_vision
 
 class A3:
     def __init__(self):
@@ -32,7 +34,7 @@ class A3:
                 return key
         return None
     
-    async def solve(self,key,question,file=None,GITHUB_TOKEN=None):
+    async def solve(self,key,question,file=None,GITHUB_TOKEN=None,LLM_TOKEN=None):
 
         solver = {
             "q-llm-sentiment-analysis": q_llm_sentiment_analysis,
@@ -40,15 +42,21 @@ class A3:
             "q-llm-embeddings": q_llm_embeddings,
             "q-embedding-similarity": q_embedding_similarity,
             "q-get-llm-to-say-yes": q_get_llm_to_say_yes,
+
+            "q-token-cost": q_token_cost,
+            "q-llm-vision": q_llm_vision,
+            # "q-function-calling": q_function_calling,
+            # "q-vector-databases": q_vector_databases,
         }
 
         if key not in solver:
             # return "No such question"
             return key
 
-        # if key in ["q-github-pages"]:
-        #     if key == "q-github-pages":
-        #         return await solver[key](question, GITHUB_TOKEN)
+        if key in ["q-token-cost"]:
+            if key == "q-token-cost":
+                return await solver[key](question, LLM_TOKEN)
+
     
         return await solver[key](question, file)
 

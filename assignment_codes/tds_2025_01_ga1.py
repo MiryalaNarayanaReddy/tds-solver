@@ -354,7 +354,7 @@ async def q_replace_across_files(question, file=None):
 
 async def q_move_rename_files(question, file=None):
     """Extract ZIP, move all files into one folder, rename digits, and compute SHA-256 checksum."""
-    TEMP_PATH = os.path.join("/tmp", "q-move-rename-files")
+    TEMP_PATH = os.path.join(TEMP_DIR, "q-move-rename-files")
     
     try:
         FINAL_FOLDER = os.path.join(TEMP_PATH, "final")

@@ -1,5 +1,10 @@
 import json 
 import re 
+import requests
+
+import base64
+import os
+
 
 async def q_llm_sentiment_analysis(question, file=None):
     return "import httpx\nimport json\n\n# Define API endpoint and headers\nurl = \"https://api.openai.com/v1/chat/completions\"\nheaders = {\n    \"Content-Type\": \"application/json\",\n    \"Authorization\": \"Bearer MY_DUMMY_API_KEY\"\n}\n\n# Define request payload\npayload = {\n    \"model\": \"gpt-4o-mini\",\n    \"messages\": [\n        {\n            \"role\": \"system\",\n            \"content\": \"You are an expert at analyzing sentiment. Classify the given text as GOOD, BAD, or NEUTRAL.\"\n        },\n        {\n            \"role\": \"user\",\n            \"content\": \"1NhNEU MqYTv eZfRSVkm4mOqnX   pjAneE69  3d6bOmGcr6\"\n        }\n    ]\n}\n\n# Make the API request\nresponse = httpx.post(url, json=payload, headers=headers)\n\n# Raise an error if the request fails\nresponse.raise_for_status()\n\n# Parse and print the response\nprint(response.json())\n"
@@ -78,3 +83,96 @@ async def q_generate_addresses_with_llms(question, file=None):
     }
     
     return json.dumps(payload, indent=2)  # Ensure direct JSON output
+
+
+async def q_token_cost(question, LLM_TOKEN=None):
+    # "List only the valid English words from these: eede, nVxt, dUu, dLGDietCB, gNhZf1rp, 2UD, slvTrzZ, RVub8q0C7, 6d0t, S4dr, Ea63pC8, 4AxYPKwDR, VDeNXdkR, ZP9Uo"
+    pattern = r"user message\s*:\s*(.*?)(?=\s*\.\.\.)"
+    match = re.search(pattern, question, re.DOTALL)
+
+    text_content=""
+
+    if match:
+        text_content = match.group(1)
+    
+    response = requests.post(
+        "https://llmfoundry.straive.com/openai/v1/chat/completions",
+        headers={"Authorization": f"Bearer {LLM_TOKEN}:tds-solver"},
+        json={"model": "gpt-4o-mini", "messages": [{"role": "user", "content": text_content}]}
+    )
+
+    r = response.json()
+
+    # prompt tokens 
+    prompt_tokens = r["usage"]["prompt_tokens"]
+
+    return prompt_tokens
+
+
+def encode_image(image_path):
+    """Encodes an image as Base64."""
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+
+async def q_llm_vision(question, file=None):
+    temp_file_path = "/tmp/uploaded_image"
+
+    # Save the uploaded file content to the /tmp folder
+    with open(temp_file_path, "wb") as temp_file:
+        temp_file.write(await file.read())
+
+    # Encode the saved image as Base64
+    base64_image = encode_image(temp_file_path)
+
+    # Determine content type based on filename or extension
+    content_type = getattr(file, "content_type", "image/png")  # Default to 'image/png'
+    if content_type== None:
+        content_type = "image/png"
+    # Construct the data URL for the image
+    data_url = f"data:{content_type};base64,{base64_image}"
+
+    # Construct the JSON body with the correct structure
+    json_body = f"""{{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {{
+      "role": "user",
+      "content": [
+        {{"type": "text", "text": "Extract text from this image"}},
+        {{
+          "type": "image_url",
+          "image_url": {{ "url": "{data_url}" }}
+        }}
+      ]
+    }}
+  ]
+}}
+"""
+    
+    """
+    # Set up the headers with content type and authorization
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {LLM_TOKEN}"
+    }
+
+    # Make a synchronous POST request to the API using requests
+    response = requests.post(
+        url="https://llmfoundry.straive.com/openai/v1/chat/completions",
+        json=json_body,
+        headers=headers,
+        verify=False  # Disable SSL verification (not recommended for production)
+    )
+
+    # Raise an exception for non-200 responses
+    response.raise_for_status()
+
+ 
+    # Return the API's GPT response as JSON
+    return response.json()
+    """
+   # Clean up: remove the temporary file after use
+    os.remove(temp_file_path)
+ 
+    return json_body

@@ -8,7 +8,7 @@ import shutil
 import tempfile
 import gzip
 
-TEMP_DIR = "./temp"
+TEMP_DIR = "/tmp"
 
 ### q-clean-up-excel-sales-data
 

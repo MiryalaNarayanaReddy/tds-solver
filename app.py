@@ -38,16 +38,19 @@ assignments = {
 }
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  # GitHub token with repo access
-
+LLM_TOKEN = os.getenv("LLM_TOKEN")
 
 async def process_request(question: str, file: Optional[UploadFile] = File(None)):
-    
+
     for assignment in assignments.values():
 
         key = assignment.process_question(question)
 
         if key:
-            answer = await assignment.solve(key, question, file, GITHUB_TOKEN)
+            if key in ["q-token-cost"]:
+                answer = await assignment.solve(key, question,file, GITHUB_TOKEN, LLM_TOKEN)
+            else:
+                answer = await assignment.solve(key, question, file, GITHUB_TOKEN)
             return answer
         else: 
             continue
