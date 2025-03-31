@@ -358,70 +358,70 @@ jobs:
     
     return f"https://github.com/{USERNAME}/{REPO_NAME}"
 
-import pandas as pd
-from tabula import read_pdf
-import os
-import re
+# import pandas as pd
+# from tabula import read_pdf
+# import os
+# import re
 
-async def q_extract_table_from_pdf(question: str, file=None):
+# async def q_extract_table_from_pdf(question: str, file=None):
  
-    try:
-        # Extract relevant numbers and subjects from the question using regex
-        #  What is the total English marks of students who scored 48 or more marks in Biology in groups 12 - 36 (including both groups)?
-        # match = re.search(r"(\d+)\s*or more.*?in\s+(\w+).*?(\d+)-(\d+).*?total\s+(\w+)\s+marks", question, re.IGNORECASE)
-        match = re.search(
-            r"What is the total (\w+) marks of students who scored (\d+) or more marks in (\w+) in groups (\d+) - (\d+)",
-            question,
-            re.IGNORECASE
-        )
+#     try:
+#         # Extract relevant numbers and subjects from the question using regex
+#         #  What is the total English marks of students who scored 48 or more marks in Biology in groups 12 - 36 (including both groups)?
+#         # match = re.search(r"(\d+)\s*or more.*?in\s+(\w+).*?(\d+)-(\d+).*?total\s+(\w+)\s+marks", question, re.IGNORECASE)
+#         match = re.search(
+#             r"What is the total (\w+) marks of students who scored (\d+) or more marks in (\w+) in groups (\d+) - (\d+)",
+#             question,
+#             re.IGNORECASE
+#         )
 
  
-        if not match:
-            return "Invalid question format"
+#         if not match:
+#             return "Invalid question format"
 
-        target_subject = match.group(1).capitalize()
-        min_score = int(match.group(2))
-        filter_subject = match.group(3).capitalize()
-        group_start = int(match.group(4))
-        group_end = int(match.group(5))
+#         target_subject = match.group(1).capitalize()
+#         min_score = int(match.group(2))
+#         filter_subject = match.group(3).capitalize()
+#         group_start = int(match.group(4))
+#         group_end = int(match.group(5))
         
-        # Define temp file path
-        temp_dir = "/tmp/q-pdf"
-        os.makedirs(temp_dir, exist_ok=True)
-        temp_pdf_path = os.path.join(temp_dir, "temp.pdf")
+#         # Define temp file path
+#         temp_dir = "/tmp/q-pdf"
+#         os.makedirs(temp_dir, exist_ok=True)
+#         temp_pdf_path = os.path.join(temp_dir, "temp.pdf")
 
-        # Save the uploaded PDF file to disk
-        pdf_bytes = await file.read()
-        with open(temp_pdf_path, "wb") as f:
-            f.write(pdf_bytes)
+#         # Save the uploaded PDF file to disk
+#         pdf_bytes = await file.read()
+#         with open(temp_pdf_path, "wb") as f:
+#             f.write(pdf_bytes)
 
-        # Extract tables from the PDF (adjust pages accordingly)
-        tables = read_pdf(temp_pdf_path, pages=f"{group_start}-{group_end}", multiple_tables=True)
+#         # Extract tables from the PDF (adjust pages accordingly)
+#         tables = read_pdf(temp_pdf_path, pages=f"{group_start}-{group_end}", multiple_tables=True)
         
-        if not tables or len(tables) == 0:
-            os.remove(temp_pdf_path)
-            return "No tables found in the PDF"
+#         if not tables or len(tables) == 0:
+#             os.remove(temp_pdf_path)
+#             return "No tables found in the PDF"
         
-        # Concatenate extracted tables
-        df = pd.concat(tables, ignore_index=True)
+#         # Concatenate extracted tables
+#         df = pd.concat(tables, ignore_index=True)
 
-        # Convert necessary columns to numeric (handle non-numeric values)
-        df[filter_subject] = pd.to_numeric(df.get(filter_subject), errors="coerce")
-        df[target_subject] = pd.to_numeric(df.get(target_subject), errors="coerce")
+#         # Convert necessary columns to numeric (handle non-numeric values)
+#         df[filter_subject] = pd.to_numeric(df.get(filter_subject), errors="coerce")
+#         df[target_subject] = pd.to_numeric(df.get(target_subject), errors="coerce")
 
-        # Drop rows with missing values in key columns
-        df.dropna(subset=[filter_subject, target_subject], inplace=True)
+#         # Drop rows with missing values in key columns
+#         df.dropna(subset=[filter_subject, target_subject], inplace=True)
 
-        # Filter students who scored above the extracted score in the given subject
-        df_filtered = df[df[filter_subject] >= min_score]
+#         # Filter students who scored above the extracted score in the given subject
+#         df_filtered = df[df[filter_subject] >= min_score]
 
-        # Calculate the total marks for the target subject
-        total_subject_marks = df_filtered[target_subject].sum()
+#         # Calculate the total marks for the target subject
+#         total_subject_marks = df_filtered[target_subject].sum()
 
-        # Clean up temp file
-        os.remove(temp_pdf_path)
+#         # Clean up temp file
+#         os.remove(temp_pdf_path)
 
-        return total_subject_marks
+#         return total_subject_marks
 
-    except Exception as e:
-       return {"error": f"Error processing file: {e}"}
+#     except Exception as e:
+#        return {"error": f"Error processing file: {e}"}
