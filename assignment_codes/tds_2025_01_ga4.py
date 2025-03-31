@@ -91,7 +91,7 @@ async def q_scrape_imdb_movies(question: str, file=None):
 
 async def q_wikipedia_outline(question: str, file=None):
     
-    base_url = "http://localhost:8000"
+    base_url = "https://tds-solver-sigma.vercel.app"
     return f"{base_url}/q-wikipedia-outline"
 
 
